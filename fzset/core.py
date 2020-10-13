@@ -4,16 +4,39 @@ __author__ = 'Hao Li'
 __date__ = '2020.09.18'
 __all__ = [
     "Interval",
+    "supMinComposition",
+    "infMaxComposition",
 ]
 
 
+import numpy as np
+
 import itertools
+
+
+def supMinComposition(R, G):
+    assert R.shape[1] == G.shape[0]
+    T = np.zeros((R.shape[0], G.shape[1]))
+    for i in range(T.shape[0]):
+        for j in range(T.shape[1]):
+            T[i, j] = max(map(min, zip(R[i, :], G[:, j])))
+    return T
+
+
+def infMaxComposition(R, G):
+    assert R.shape[1] == G.shape[0]
+    T = np.zeros((R.shape[0], G.shape[1]))
+    for i in range(T.shape[0]):
+        for j in range(T.shape[1]):
+            T[i, j] = min(map(max, zip(R[i, :], G[:, j])))
+    return T
 
 
 class Interval:
     def __init__(self, interval):
         assert isinstance(interval, (list, tuple))
         assert len(interval) == 2
+        assert interval[1] >= interval[0]
         self._interval = tuple(interval)
 
     @property
@@ -27,11 +50,24 @@ class Interval:
     def __str__(self):
         return self._interval.__str__()
 
-    def __add__(self, other):
+    def __eq__(self, other):
         assert isinstance(other, Interval)
-        lower = self.min + other.min
-        upper = self.max + other.max
-        return Interval((lower, upper))
+        return self.min == other.min and self.max == other.max
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __add__(self, other):
+        if isinstance(other, Interval):
+            lower = self.min + other.min
+            upper = self.max + other.max
+            return Interval((lower, upper))
+        elif isinstance(other, (int, float)):
+            lower = self.min + other
+            upper = self.max + other
+            return Interval((lower, upper))
+        else:
+            raise ValueError("must be (Interval, int, float)")
 
     def __mul__(self, other):
         if isinstance(other, Interval):
@@ -40,6 +76,8 @@ class Interval:
         elif isinstance(other, (int, float)):
             lower = self.min * other
             upper = self.max * other
+            if other < 0:
+                return Interval((upper, lower))
             return Interval((lower, upper))
         else:
             raise ValueError("must be (Interval, int, float)")
@@ -51,3 +89,18 @@ class Interval:
     def __truediv__(self, other):
         assert isinstance(other, Interval)
         return self * Interval((1 / other.max, 1 / other.min))
+
+    def __len__(self):
+        return self.max - self.min
+
+    def intersection(self, interval):
+        assert isinstance(interval, Interval)
+        lower = max(self.min, interval.min)
+        upper = min(self.max, interval.max)
+        return Interval((lower, upper))
+
+    def union(self, interval):
+        assert isinstance(interval, Interval)
+        lower = min(self.min, interval.min)
+        upper = max(self.max, interval.max)
+        return Interval((lower, upper))
