@@ -4,8 +4,10 @@ __author__ = 'Hao Li'
 __date__ = '2020.09.18'
 __all__ = [
     "Interval",
+    "DiscreteMembership",
     "supMinComposition",
     "infMaxComposition",
+    "calProximityMatrix",
 ]
 
 
@@ -104,3 +106,34 @@ class Interval:
         lower = min(self.min, interval.min)
         upper = max(self.max, interval.max)
         return Interval((lower, upper))
+
+
+class DiscreteMembership:
+    def __init__(self, values):
+        self._values = values
+
+    def __str__(self):
+        return self._values.__str__()
+
+    def complement(self):
+        new_values = [1 - v for v in self._values]
+        return DiscreteMembership(new_values)
+
+    def union(self, other):
+        assert isinstance(other, DiscreteMembership)
+        new_values = [max(a, b) for a, b in zip(self._values, other._values)]
+        return DiscreteMembership(new_values)
+
+    def intersection(self, other):
+        assert isinstance(other, DiscreteMembership)
+        new_values = [min(a, b) for a, b in zip(self._values, other._values)]
+        return DiscreteMembership(new_values)
+
+
+def calProximityMatrix(partitionMatrix):
+    n = partitionMatrix.shape[1]
+    proximity = np.zeros((n, n))
+    for k in range(n):
+        for l in range(n):
+            proximity[k, l] = sum(np.min(partitionMatrix[:, (k, l)], axis=1))
+    return proximity
