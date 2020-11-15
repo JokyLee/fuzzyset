@@ -8,10 +8,15 @@ __all__ = [
     "supMinComposition",
     "infMaxComposition",
     "calProximityMatrix",
+    "calProbabilityOfFuzzyEvent",
+    "calMeanOfFuzzyEvent",
+    "calVarianceOfFuzzyEvent",
+    "analyticHierarchyProcess",
 ]
 
 
 import numpy as np
+import scipy.linalg
 
 import itertools
 
@@ -137,3 +142,45 @@ def calProximityMatrix(partitionMatrix):
         for l in range(n):
             proximity[k, l] = sum(np.min(partitionMatrix[:, (k, l)], axis=1))
     return proximity
+
+
+def _transFuzzyEventParam(x, Ax, px):
+    x = np.array(x)
+    Ax = np.array(Ax)
+    px = np.array(px)
+    assert np.allclose(px.sum(), 1)
+    assert len(x) == len(Ax) == len(px)
+    return x, Ax, px
+
+
+def calProbabilityOfFuzzyEvent(x, Ax, px):
+    x, Ax, px = _transFuzzyEventParam(x, Ax, px)
+    return (Ax * px).sum()
+
+
+def calMeanOfFuzzyEvent(x, Ax, px):
+    x, Ax, px = _transFuzzyEventParam(x, Ax, px)
+    return (x * Ax * px).sum()
+
+
+def calVarianceOfFuzzyEvent(x, Ax, px):
+    x, Ax, px = _transFuzzyEventParam(x, Ax, px)
+    mean = calMeanOfFuzzyEvent(x, Ax, px)
+    return ((x - mean) ** 2 * Ax * px).sum()
+
+
+def _checkReciprocalMatrix(R):
+    for i in range(R.shape[0]):
+        for j in range(i, R.shape[1]):
+            assert np.allclose(R[i][j], 1/R[j][i])
+
+
+def analyticHierarchyProcess(R):
+    _checkReciprocalMatrix(R)
+    eigen_values, eigen_vectors = scipy.linalg.eig(R)
+    assert np.allclose(eigen_values[0].imag, 0)
+    assert np.allclose(eigen_vectors[:, 0].imag, 0)
+    abs_vec = np.abs(eigen_vectors[:, 0].real)
+    l_max = eigen_values[0].real
+    inconsistency_index = (l_max - len(abs_vec))/ (len(abs_vec)-1)
+    return inconsistency_index, l_max, abs_vec / np.max(abs_vec)
