@@ -12,6 +12,7 @@ __all__ = [
     "calMeanOfFuzzyEvent",
     "calVarianceOfFuzzyEvent",
     "analyticHierarchyProcess",
+    "decodeByCenterOfGravity",
 ]
 
 
@@ -145,9 +146,9 @@ def calProximityMatrix(partitionMatrix):
 
 
 def _transFuzzyEventParam(x, Ax, px):
-    x = np.array(x)
-    Ax = np.array(Ax)
-    px = np.array(px)
+    x = np.array(x, np.float)
+    Ax = np.array(Ax, np.float)
+    px = np.array(px, np.float)
     assert np.allclose(px.sum(), 1)
     assert len(x) == len(Ax) == len(px)
     return x, Ax, px
@@ -184,3 +185,22 @@ def analyticHierarchyProcess(R):
     l_max = eigen_values[0].real
     inconsistency_index = (l_max - len(abs_vec))/ (len(abs_vec)-1)
     return inconsistency_index, l_max, abs_vec / np.max(abs_vec)
+
+
+def _transXAndAx(x, Ax):
+    x = np.array(x, np.float)
+    Ax = np.array(Ax, np.float)
+    assert len(x) == len(Ax)
+    assert Ax.max() <= 1.0
+    return x, Ax
+
+
+def decodeByCenterOfGravity(x, Ax, gamma):
+    x, Ax = _transXAndAx(x, Ax)
+    filtered_Ax = Ax[Ax >= gamma]
+    filtered_x = x[Ax >= gamma]
+    numerator = (filtered_Ax * filtered_x).sum()
+    denominator = filtered_Ax.sum()
+    print("numerator:", numerator)
+    print("denominator:", denominator)
+    return numerator / denominator
