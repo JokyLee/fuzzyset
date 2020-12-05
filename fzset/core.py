@@ -13,6 +13,7 @@ __all__ = [
     "calVarianceOfFuzzyEvent",
     "analyticHierarchyProcess",
     "decodeByCenterOfGravity",
+    "indexOfRelationality",
 ]
 
 
@@ -187,10 +188,14 @@ def analyticHierarchyProcess(R):
     return inconsistency_index, l_max, abs_vec / np.max(abs_vec)
 
 
-def _transXAndAx(x, Ax):
+def _transXAndY(x, y):
     x = np.array(x, np.float)
-    Ax = np.array(Ax, np.float)
-    assert len(x) == len(Ax)
+    y = np.array(y, np.float)
+    return x, y
+
+
+def _transXAndAx(x, Ax):
+    x, Ax = _transXAndY(x, Ax)
     assert Ax.max() <= 1.0
     return x, Ax
 
@@ -204,3 +209,15 @@ def decodeByCenterOfGravity(x, Ax, gamma):
     print("numerator:", numerator)
     print("denominator:", denominator)
     return numerator / denominator
+
+
+def indexOfRelationality(x, y):
+    x, y = _transXAndY(x, y)
+    rel = 0
+    for l in range(len(x)):
+        for k in range(l + 1, len(x)):
+            delta_x = abs(x[k] - x[l])
+            delta_y = abs(y[k] - y[l])
+            if delta_y > delta_x:
+                rel += 1 - delta_x / delta_y
+    return rel
