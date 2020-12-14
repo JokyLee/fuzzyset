@@ -5,3 +5,5 @@ __date__ = '2020.09.18'
 
 
 from .core import *
+from . import memberships
+from . import descriptors
