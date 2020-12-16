@@ -165,12 +165,20 @@ def Q5():
 
 
 def main():
-    # paramsOfFuzzyEvent()
-    # plotParabolic()
-    # ahp()
-    # justifiableGranularity()
-    # justifiableGranularity2()
+    # Q1
+    paramsOfFuzzyEvent()
+
+    # Q2
+    plotParabolic()
+
+    # Q3
+    ahp()
+
+    justifiableGranularity()
+    justifiableGranularity2()
     # justifiableGranularity3()
+
+    # Q5
     Q5()
 
 

@@ -39,11 +39,13 @@ def main():
     print("core of A:", fzset.descriptors.core(A))
     print("support of A:", fzset.descriptors.support(A))
 
+    # 3
     x = Symbol('x')
-    print(integrate(1 - asin(x) / 5, x))
-    res = integrate(1 - asin(x) / 5, (x, 0, 1))
+    pprint(integrate(1 - (pi - 2 * asin(x)) / 5, x))
+    res = integrate(1 - (pi - 2 * asin(x)) / 5, (x, 0, 1))
     print(res)
 
+    # 4
     print("--------------------------------------")
     A = fzset.Interval([1, 5])
     B = fzset.Interval([-2, 4])

@@ -14,6 +14,8 @@ __all__ = [
     "analyticHierarchyProcess",
     "decodeByCenterOfGravity",
     "indexOfRelationality",
+    "mapTo",
+    "orderedWeightedAverage",
 ]
 
 
@@ -184,7 +186,7 @@ def analyticHierarchyProcess(R):
     assert np.allclose(eigen_vectors[:, 0].imag, 0)
     abs_vec = np.abs(eigen_vectors[:, 0].real)
     l_max = eigen_values[0].real
-    inconsistency_index = (l_max - len(abs_vec))/ (len(abs_vec)-1)
+    inconsistency_index = (l_max - len(abs_vec))/ (len(abs_vec) - 1)
     return inconsistency_index, l_max, abs_vec / np.max(abs_vec)
 
 
@@ -221,3 +223,21 @@ def indexOfRelationality(x, y):
             if delta_y > delta_x:
                 rel += 1 - delta_x / delta_y
     return rel
+
+
+def mapTo(x, Ax, func):
+    x, Ax = _transXAndAx(x, Ax)
+    res = {}
+    for a, b in zip(x, Ax):
+        key = func(a)
+        res.setdefault(key, [])
+        res[key].append(b)
+    for k, v in res.items():
+        res[k] = max(v)
+    return res
+
+
+def orderedWeightedAverage(values, weights):
+    assert len(values) == len(weights)
+    sorted_values = sorted(values)
+    return sum([i * j for i, j in zip(sorted_values, weights)])
