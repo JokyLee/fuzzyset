@@ -87,17 +87,25 @@ def justifiableGranularity():
 
 
 def justifiableGranularity2():
-    experimental_data = np.array([
-        8.7, 8.5, 4.3, 2.9, 0.8, 1.5, 1.6, 2.4, 1.1, 5.1, 4.8, 4.5, 6.1, 3.1, 7.9, 8.1, 2.0
-    ])
+    # experimental_data = np.array([
+    #     8.7, 8.5, 4.3, 2.9, 0.8, 1.5, 1.6, 2.4, 1.1, 5.1, 4.8, 4.5, 6.1, 3.1, 7.9, 8.1, 2.0
+    # ])
+    # experimental_data = np.array([1.0]*7)  # 1
+    # experimental_data = np.array([0.9, 1.0, 0.4, 0.8, 0.6, 1.0, 0.8]) # 2
+    # experimental_data = np.array([0.7, 0.5, 0.2, 0.7, 0.5, 0.8, .5]) # 3
+    # experimental_data = np.array([0.5, 0.3, 0.1, 0.6, 0.5, 0.4, 0.4]) # 4
+    # experimental_data = np.array([0.4, 0.2, 0.1, 0.5, 0.4, 0.3, 0.4]) # 5
+    # experimental_data = np.array([0.2, 0.2, 0.0, 0.4, 0.0, 0.2, 0.3]) # 6
+    # experimental_data = np.array([0.0, 0.1, 0.0, 0.2, 0.0, 0.1, 0.1]) # 7
+    experimental_data = np.array([0.0, 0.0, 0.0, 0.2, 0.0, 0.1, 0.0]) # 8
     experimental_data.sort()
     r = experimental_data.mean()
     print("r = {} round to {}".format(r, round(r, 2)))
     r = round(r, 2)
     print("================= upper bound =================")
-    upper_range = experimental_data.max() - r
+    upper_range = 1.0 - r
     print("experimental_data.max(): {}, upper_range = {}".format(experimental_data.max(), upper_range))
-    upper = experimental_data[experimental_data > r]
+    upper = experimental_data[experimental_data >= r]
     print(upper, len(upper))
     for i, b in enumerate(upper):
         cov = (i + 1) / len(upper)
@@ -106,9 +114,9 @@ def justifiableGranularity2():
         print("{}: cov {}, sp {}, v {}".format(b, cov, sp, v))
 
     print("================= lower bound =================")
-    lower_range = r - experimental_data.min()
-    print("experimental_data.min(): {}, upper_range = {}".format(experimental_data.min(), lower_range))
-    lower = experimental_data[experimental_data < r]
+    lower_range = r - 0.0
+    print("experimental_data.min(): {}, lower_range = {}".format(experimental_data.min(), lower_range))
+    lower = experimental_data[experimental_data <= r]
     print(lower, len(lower))
     for i, a in enumerate(lower[::-1]):
         cov = (i + 1) / len(lower)
@@ -166,20 +174,20 @@ def Q5():
 
 def main():
     # Q1
-    paramsOfFuzzyEvent()
+    # paramsOfFuzzyEvent()
 
     # Q2
-    plotParabolic()
+    # plotParabolic()
 
     # Q3
-    ahp()
+    # ahp()
 
-    justifiableGranularity()
+    # justifiableGranularity()
     justifiableGranularity2()
     # justifiableGranularity3()
 
     # Q5
-    Q5()
+    # Q5()
 
 
 if __name__ == '__main__':

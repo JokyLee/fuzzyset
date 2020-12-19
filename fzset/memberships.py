@@ -44,3 +44,21 @@ class piecewise:
         if idx >= len(self._coeffs):
             idx = len(self._coeffs) - 1
         return self._coeffs[idx][0] * x + self._coeffs[idx][1]
+
+
+class triangular:
+    def __init__(self, a, m, b):
+        self._a = a
+        self._m = m
+        self._b = b
+
+    def eval(self, x):
+        if x <= self._a or x >= self._b:
+            return 0
+        elif x == self._m:
+            return 1
+        elif self._a < x < self._m:
+            return (x - self._a) / (self._m - self._a)
+        else:
+            return (self._b - x) / (self._b - self._m)
+
